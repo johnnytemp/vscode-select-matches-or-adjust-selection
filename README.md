@@ -94,7 +94,7 @@ Hints:
 - For how to define patterns in the configuration, you could look at the default patterns as examples. (`Ctrl-Shift-P` to open command palette, type "Open Default Settings (JSON)" & Enter, and search for `selectMatchesOrAdjustSelection.patterns`)
 - To hide a default pattern, add `"Pattern's Name": false` inside `selectMatchesOrAdjustSelection.patterns`.
 - You could make use of the default rules of the VS Code extension "Quick Replace In Selection" (by johnnywong), `Escape literal string for PCRE/extended regular expression` (optional) and then `Json stringify` and to put your regular expression in the `"find"` settings of `selectMatchesOrAdjustSelection.patterns`.
-- An experimental feature: to only replace the first match (instead of all matches) in each selection, put a leading "<code>?-g </code>" in the regex input box or `"find"` parameter.
+- An experimental feature: to only search the first match (instead of all matches) in each selection, put a leading "<code>?-g </code>" in the regex input box or `"find"` parameter.
 
 ## Default patterns
 
