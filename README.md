@@ -1,10 +1,22 @@
-# Select Matches Or Adjust Selection Using Regex Or Rules README
+# Select Matches Or Adjust Selection README
 
-A main feature of this extension are the various "Select Matches" commands. They let you search and select the matches by a regular expression (regex) (or literal string [#1](#footnote1)), within the current selection, the whole document, or after cursors. It also let you use *predefined patterns* to perform such selections. With these commands, you could do job like shrink selections, extends selections, move selections, etc.
+This extension features a set of **"Select Matches"** commands. They let you search and select the matches by a regular expression (regex) (or literal string [#1](#footnote1)) - within the current selections, the whole document, or after cursors. *Predefined patterns* can also be used. With these commands, you could do jobs like shrink selections, extends selections, move selections, etc.
 
-Besides, it have some commands to make or adjust selections. E.g. you could do "Normalize Selection", which Unselect Surrounding Whitespaces and Expand the Incomplete Words. You could also select a `#hashtag` or `$variable` with a keyboard shortcut.
+Besides, it has various commands to make or adjust selections. For example, it allows you to...
+
+1. `Normalize Selection` which unselect surrounding whitespaces and expand the incomplete words.
+2. Select a `#hashtag` or `$variable` with a keyboard shortcut.
+3. Expand current selections' left/both boundaries by 1 character wide.
 
 **Note**: By default, for the "Select Matches" commands, all matches in the regex are *case sensitive* [#2](#footnote2), and `^`, `$`  match *text selection boundaries* instead of line boundaries [#3](#footnote3).
+
+## Features
+
+- All commands support *multiple selections* or cursors to act on. (VS Code's built-in Find feature doesn't support this)
+- Can assign keyboard shortcuts to specific criteria for productivity.
+- Memorize last used search string or pattern name. (memory lost when program exits)
+- Additional options to delete, align, or conditionally extend to, the matches found.
+- Some useful default patterns. E.g. find next parentheses pair of regex, either literally or within JSON string.
 
 ## Commands & Demo
 
@@ -12,7 +24,8 @@ Besides, it have some commands to make or adjust selections. E.g. you could do "
 
 ![Select Matches In Selection or From Cursors](https://github.com/johnnytemp/vscode-select-matches-or-adjust-selection/raw/master/images/selectInSelectionOrFromCursors.gif)
 
-The "... From Cursors..." above meant to search from cursors or selection ends onwards.
+`...From Cursors` meant to search from cursors or ends of selections onwards. `Select Up To...` will extend current selection if next match found. `Select All Matches...` commands will operate on the whole document if current selection is a single cursor.  
+Selections without corresponding matches won't be kept.
 
 Remark: "Select All Matches In Selection..." is similar to "Find All In Selection".
 
@@ -22,7 +35,7 @@ Remark: "Select All Matches In Selection..." is similar to "Find All In Selectio
 
 ![Select Matches Using Pattern Or In Line Selections](https://github.com/johnnytemp/vscode-select-matches-or-adjust-selection/raw/master/images/selectByPatternOrInLineSelections.gif)
 
-The "Line Selections" meant the current text selections will be further split into one-line-each for searching a pattern inside.
+"Line Selections" meant the current text selections will be further split into one-line-each for searching the pattern inside.
 
 <br>
 
@@ -38,6 +51,8 @@ This operation unselect surrounding whitespaces, and it make incomplete words at
 
 ![Select Word and Its Prefix](https://github.com/johnnytemp/vscode-select-matches-or-adjust-selection/raw/master/images/selectWordAndItsPrefix.gif)
 
+The word and the desired prefix (if any) at the start of each selection/cursor will be selected by extending selections.
+
 <br>
 
 ### "Increment Selection Starts" (Shortcut: "Ctrl-K H"), "Increment Selection Starts and Ends" (Shortcut: "Ctrl-K L") and "Decrement Selection Starts and Ends" (Shortcut: "Ctrl-K Shift-L")
@@ -46,7 +61,7 @@ This operation unselect surrounding whitespaces, and it make incomplete words at
 - "Increment Selection Starts and Ends" extends both selection starts and ends by 1 character each.
 - "Decrement Selection Starts and Ends" shrink both selection starts and ends by 1 character each.
 
-## Features
+## More Details
 
 - This extension mainly use the regular expression that JavaScript support for search.
 
@@ -96,7 +111,7 @@ Hints:
 - You could make use of the default rules of the VS Code extension "Quick Replace In Selection" (by johnnywong), `Escape literal string for PCRE/extended regular expression` (optional) and then `Json stringify` and to put your regular expression in the `"find"` settings of `selectMatchesOrAdjustSelection.patterns`.
 - An experimental feature: to only search the first match (instead of all matches) in each selection, put a leading "<code>?-g </code>" in the regex input box or `"find"` parameter.
 
-## Default patterns
+## Default Patterns
 
 Some default patterns are listed here:
 
@@ -107,7 +122,7 @@ Some default patterns are listed here:
 - Whitespaces to non-whitespaces boundary
 - Word
 
-## Keyboard shortcuts
+## Keyboard Shortcuts
 
 - You could also define custom keyboard shortcuts for each command, e.g.:
 
