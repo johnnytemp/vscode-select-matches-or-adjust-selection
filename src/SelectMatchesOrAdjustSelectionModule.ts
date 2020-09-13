@@ -8,11 +8,12 @@ import { SelectMatchesByPatternCommand } from './SelectMatchesByPatternCommand';
 import { SelectMatchesRepeatLastCommand } from './SelectMatchesRepeatLastCommand';
 import { SelectMatchesCommandBase } from './SelectMatchesCommandBase';
 import * as helper from './helper';
+import { IRepeatableCommand } from './RepeatableCommand';
 
 export class SelectMatchesOrAdjustSelectionModule {
   private _config : SelectMatchesOrAdjustSelectionConfig;
   // private _repeatLastCommand : QuickReplaceInSelectionRepeatLastCommand;
-  private _lastSelectCommand : SelectMatchesCommandBase | null = null;
+  private _lastSelectCommand : IRepeatableCommand | null = null;
   private _selectExprInSelectionCommand : SelectExprInSelectionCommand;
   private _selectNextExprFromCursorsCommand : SelectNextExprFromCursorsCommand;
   private _selectUpToNextExprFromCursorsCommand : SelectUpToNextExprFromCursorsCommand;
@@ -48,12 +49,16 @@ export class SelectMatchesOrAdjustSelectionModule {
     return this._repeatLastCommand;
   } */
 
-  public getLastSelectCommand() : SelectMatchesCommandBase | null {
+  public getLastSelectCommand() : IRepeatableCommand | null {
     return this._lastSelectCommand;
   }
 
-  public setLastSelectCommand(command : SelectMatchesCommandBase | null) {
-    this._lastSelectCommand = command;
+  public setLastSelectCommand(command : IRepeatableCommand | null) {
+    if (command && this._config.getRepeatCommandUseCache()) {
+      this._lastSelectCommand = command.clone();
+    } else {
+      this._lastSelectCommand = command;
+    }
   }
 
   public getSelectInSelectionCommand() : SelectExprInSelectionCommand {
@@ -106,6 +111,10 @@ export class SelectMatchesOrAdjustSelectionModule {
   public clearHistory() {
     this.getSelectInSelectionCommand().clearHistory();
     this.getSelectMatchesByPatternCommand().clearHistory();
+    let lastCommand = this.getLastSelectCommand();
+    if (lastCommand) {
+      lastCommand.clearHistory();
+    }
     this.setLastSelectCommand(null);
   }
 

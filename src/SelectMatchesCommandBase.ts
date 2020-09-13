@@ -1,6 +1,7 @@
 import { window, TextEditor, TextDocument, Selection } from 'vscode';
 import { SearchOrReplaceCommandBase } from './SearchOrReplaceCommandBase';
 import { SelectMatchesOrAdjustSelectionModule } from './SelectMatchesOrAdjustSelectionModule';
+import { IRepeatableCommand } from './RepeatableCommand';
 
 export type SelectMatchesOptions = { optionFlags : string, skipGroup: number | null, selectGroup: number };
 
@@ -8,14 +9,21 @@ export type SelectMatchesOptions = { optionFlags : string, skipGroup: number | n
  * SelectMatchesCommandBase class
  */
 export class SelectMatchesCommandBase extends SearchOrReplaceCommandBase {
-  static lastTarget : string = '';
+  private static lastTarget : string = '';
+  private _lastTarget : string | null = null; // null -> use shared static lastTarget (for UI controls)
   private _selectionsPreProcessor : (document : TextDocument, selections : Selection[]) => Selection[];
   private _selectionsPostProcessor : (document : TextDocument, newSelections : Selection[]) => void;
 
   public constructor() {
-    super()
+    super();
     this._selectionsPreProcessor = (document, selections) => { return selections; };
     this._selectionsPostProcessor = (document, newSelections) => { };
+  }
+
+  public clone() : IRepeatableCommand {
+    let ret = (super.clone() as SelectMatchesCommandBase);
+    ret._lastTarget = this.getLastSelectSearchTarget();
+    return ret;
   }
 
   public setSelectionPreProcessor(processFunc : (document : TextDocument, selections : Selection[]) => Selection[]) {
@@ -35,11 +43,15 @@ export class SelectMatchesCommandBase extends SearchOrReplaceCommandBase {
   }
 
   protected getLastSelectSearchTarget() {
-    return SelectMatchesCommandBase.lastTarget;
+    return this._lastTarget === null ? SelectMatchesCommandBase.lastTarget : this._lastTarget;
   }
 
   protected setLastSelectSearchTarget(target: string) {
-    SelectMatchesCommandBase.lastTarget = target;
+    if (this._lastTarget !== null) {
+      this._lastTarget = target;
+    } else {
+      SelectMatchesCommandBase.lastTarget = target;
+    }
   }
 
   public clearHistory() {

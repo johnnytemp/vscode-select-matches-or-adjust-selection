@@ -7,7 +7,7 @@ import { SelectMatchesOrAdjustSelectionModule } from './SelectMatchesOrAdjustSel
  * SelectMatchesByPatternCommand class
  */
 export class SelectMatchesByPatternCommand extends SelectMatchesCommandBase {
-  private static lastRuleName : string = '';
+  private _lastRuleName : string = '';
   private _lastPatternSelectMethod : SelectMatchesCommandBase | null;
   private _underlyingCommand : SelectMatchesCommandBase | undefined;
   private _lastExtraOptions : string = '';
@@ -35,11 +35,11 @@ export class SelectMatchesByPatternCommand extends SelectMatchesCommandBase {
   }
 
   protected getLastSelectRuleName() {
-    return SelectMatchesByPatternCommand.lastRuleName;
+    return this._lastRuleName;
   }
 
   protected setLastSelectRuleName(name: string) {
-    SelectMatchesByPatternCommand.lastRuleName = name;
+    this._lastRuleName = name;
   }
 
   protected getLastPatternSelectMethod() : SelectMatchesCommandBase | null {
@@ -153,7 +153,9 @@ export class SelectMatchesByPatternCommand extends SelectMatchesCommandBase {
       ruleName = lastRuleName;
     } else if (ruleName === '( Input Expressions... )') {
       this.setLastSelectRuleName(''); // also clear last rule, so that '( Input Expressions... )' is the first item for faster re-run.
-      module.setLastSelectCommand(null);
+      if (module.getLastSelectCommand() === this) {
+        module.setLastSelectCommand(null);  // clear because last rule name is cleared. However, now the last command is copied at setLastCommand() if "repeatCommandUseCache" is true, and so this never occur in such case.
+      }
       selectMatchesCommand.performCommand();
       return;
     } else {
