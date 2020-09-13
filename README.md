@@ -16,7 +16,7 @@ Besides, it has various commands to make or adjust selections. For example, it a
 - Can assign keyboard shortcuts to specific criteria for productivity.
 - Memorize last used search string or pattern name. (memory lost when program exits)
 - Additional options to delete, align, or conditionally extend to, the matches found.
-- Some useful default patterns. E.g. find next parentheses pair of regex, either literally or within JSON string.
+- Some useful default patterns. E.g. find next parentheses pair of regex, either literally or within JSON string; and find simple string.
 
 ## Commands & Demo
 

@@ -76,7 +76,6 @@ export class SelectMatchesCommandBase extends SearchOrReplaceCommandBase {
       value: this.getLastSelectSearchTarget()
     }).then((target: string | undefined) => {
       if (target !== undefined) {
-        this.getModule().setLastSelectCommand(this);
         this.handleError(this.performSelection(target, this.addDefaultFlags(), true));
       }
     });
@@ -85,6 +84,7 @@ export class SelectMatchesCommandBase extends SearchOrReplaceCommandBase {
   public performSelection(target: string, flags?: string, fromUserInput?: boolean, patternName?: string) : string | null {
     if (fromUserInput && this.getCommandType() === 'input') {
       this.setLastSelectSearchTarget(target);
+      this.getModule().setLastSelectCommand(this); // Fix: this need to be after the save state, for it may copy the state now.
     }
     if (target === '') { // this special case is for clear history
       return null;

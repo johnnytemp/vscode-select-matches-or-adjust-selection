@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.10.2] - 2020-09-14
+
+### Changed
+
+- Shorten extension's name.
+- Improved stability for repeat last command.
+
 ## [0.10.1] - 2020-09-04
 
 ### Fix

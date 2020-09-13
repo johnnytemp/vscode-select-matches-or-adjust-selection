@@ -2,7 +2,7 @@
   "name": "select-matches-or-adjust-selection",
   "displayName": "Select Matches Or Adjust Selection",
   "description": "Support select next matches from cursors / all matches in selections (by input regex or preset patterns), and various selections adjustments such as unselect surrounding whitespaces with Normalize Selection",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "publisher": "johnnywong",
   "icon": "images/select-matches-or-adjust-selection-icon.png",
   "engines": {
@@ -215,6 +215,11 @@
               "find": "[$]?\\b\\w+\\b"
             }
           }
+        },
+        "selectMatchesOrAdjustSelection.repeatCommandUseCache": {
+          "type": "boolean",
+          "description": "Whether the \"repeat last\" command should use separate state cache, instead of use the state from the UI control. Enable this will make UI control not able to clear the last command state, and make the last command unidentifiable, but leading to a more stable \"repeat last\" command.",
+          "default": false
         }
       }
     }
