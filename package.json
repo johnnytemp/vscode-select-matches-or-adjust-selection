@@ -2,7 +2,7 @@
   "name": "select-matches-or-adjust-selection",
   "displayName": "Select Matches Or Adjust Selection",
   "description": "Support select next matches from cursors / all matches in selections (by input regex or preset patterns), and various selections adjustments such as unselect surrounding whitespaces with Normalize Selection",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "publisher": "johnnywong",
   "icon": "images/select-matches-or-adjust-selection-icon.png",
   "engines": {
