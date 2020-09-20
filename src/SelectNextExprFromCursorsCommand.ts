@@ -47,6 +47,9 @@ export class SelectNextExprFromCursorsCommand extends SelectMatchesCommandBase {
               document.positionAt(offsetEnd)
             );
             newSelections.push(newSelection);
+            if (newSelections.length === 1 && shouldExtends) {
+              outInfo.specificRevealRange = new Selection(document.positionAt(offsetStart), newSelection.end);
+            }
             break;
           }
         }

@@ -37,6 +37,8 @@ Remark: "Select All Matches In Selection..." is similar to "Find All In Selectio
 
 "Line Selections" meant the current text selections will be further split into one-line-each for searching the pattern inside.
 
+Also, the "Select Matches Using Pattern (or input)..." -> "... Next Matches From Cursors..." options support a "Use Selected Text" entry to use the currently selected text as the search target (i.e. next occurrence).
+
 <br>
 
 ### "Normalize Selection" (Shortcut: Ctrl-Shift-A)

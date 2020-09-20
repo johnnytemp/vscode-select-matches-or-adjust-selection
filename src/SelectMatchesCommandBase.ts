@@ -94,7 +94,7 @@ export class SelectMatchesCommandBase extends SearchOrReplaceCommandBase {
       return 'No editor';
     }
     let newSelections: Selection[] = [];
-    let outInfo : any = { options: {}, regexp: {} };
+    let outInfo : any = { options: {}, regexp: {}, specificRevealRange: null };
     let selections = editor.selections;
     selections = this._selectionsPreProcessor(editor.document, selections);
     let error = this.computeSelection(editor, selections, newSelections, target, outInfo, flags);
@@ -114,6 +114,9 @@ export class SelectMatchesCommandBase extends SearchOrReplaceCommandBase {
         editor.selections = newSelections;
       }
       editor.revealRange(newSelections[0]);
+      if (outInfo.specificRevealRange) {
+        editor.revealRange(outInfo.specificRevealRange);
+      }
     } else {
       return 'No matches found to select, for ' + (patternName ?
         'pattern "' + patternName + '"':

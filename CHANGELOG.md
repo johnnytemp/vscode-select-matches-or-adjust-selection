@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.10.4] - 2020-09-20
+
+### Added
+
+- Add "Use Selected Text" option for "Next Matches From Cursors" and "Up To Next Matches From Cursors" in "Select Matches Using Pattern".
+
+### Changed
+
+- The "Select Up To Next Matches From Cursors" command is improved to reveal the range of the first match afterward.
+
 ## [0.10.3] - 2020-09-14
 
 ### Changed

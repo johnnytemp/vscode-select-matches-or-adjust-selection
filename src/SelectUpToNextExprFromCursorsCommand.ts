@@ -41,6 +41,9 @@ export class SelectUpToNextExprFromCursorsCommand extends SelectMatchesCommandBa
             let offsetEnd = offsetStart + this.getCaptureGroupLength(arrMatch, options.selectGroup);
             let newSelection = new Selection(selection.start, document.positionAt(offsetEnd));
             newSelections.push(newSelection);
+            if (newSelections.length === 1) {
+              outInfo.specificRevealRange = new Selection(document.positionAt(offsetStart), newSelection.end);
+            }
             break;
           }
         }
