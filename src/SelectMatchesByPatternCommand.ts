@@ -2,6 +2,9 @@ import { window } from 'vscode';
 import { SelectRule } from './SelectMatchesOrAdjustSelectionConfig';
 import { SelectMatchesCommandBase } from './SelectMatchesCommandBase';
 import { SelectMatchesOrAdjustSelectionModule } from './SelectMatchesOrAdjustSelectionModule';
+import { SelectNextExprFromCursorsCommand } from './SelectNextExprFromCursorsCommand';
+import { SelectUpToNextExprFromCursorsCommand } from './SelectUpToNextExprFromCursorsCommand';
+import * as helper from './helper';
 
 /**
  * SelectMatchesByPatternCommand class
@@ -112,18 +115,29 @@ export class SelectMatchesByPatternCommand extends SelectMatchesCommandBase {
   public performCommandWithSelectCommand(selectMatchesCommand: SelectMatchesCommandBase) {
     let module = this.getModule();
     let lastRuleName = this.getLastSelectRuleName();
-    this.showRuleChooser(module, lastRuleName, false).then((ruleName : string | undefined) => {
+
+    let editor = window.activeTextEditor;
+    let shouldShowUseSelectedText = false;
+    if ((selectMatchesCommand instanceof SelectNextExprFromCursorsCommand || selectMatchesCommand instanceof SelectUpToNextExprFromCursorsCommand) &&
+        editor &&
+        editor.selections.length === 1 &&
+        !editor.selection.isEmpty /* &&
+        editor.selection.isSingleLine */) {
+      shouldShowUseSelectedText = true;
+    }
+
+    this.showRuleChooser(module, shouldShowUseSelectedText, lastRuleName, false).then((ruleName : string | undefined) => {
       if (ruleName === '( Additional Options for Pattern... )') {
-        this.showRuleChooser(module, lastRuleName, true).then((ruleName : string | undefined) => {
-          this.onRuleChosen(module, selectMatchesCommand, ruleName, lastRuleName, true);
+        this.showRuleChooser(module, shouldShowUseSelectedText, lastRuleName, true).then((ruleName : string | undefined) => {
+          this.onRuleChosen(module, shouldShowUseSelectedText, selectMatchesCommand, ruleName, lastRuleName, true);
         });
         return;
       }
-      this.onRuleChosen(module, selectMatchesCommand, ruleName, lastRuleName, false);
+      this.onRuleChosen(module, shouldShowUseSelectedText, selectMatchesCommand, ruleName, lastRuleName, false);
     });
   }
 
-  protected showRuleChooser(module : SelectMatchesOrAdjustSelectionModule, lastRuleName : string, isAdditionalOptionsForPattern : boolean) : Thenable<string | undefined> {
+  protected showRuleChooser(module : SelectMatchesOrAdjustSelectionModule, shouldShowUseSelectedText : boolean, lastRuleName : string, isAdditionalOptionsForPattern : boolean) : Thenable<string | undefined> {
     let rules = module.getConfig().getSelectRules();
     // let lastRuleName = this.getLastSelectRuleName();
 
@@ -133,10 +147,16 @@ export class SelectMatchesByPatternCommand extends SelectMatchesCommandBase {
       if (!isAdditionalOptionsForPattern) {
         ruleNames.push('( Additional Options for Pattern... )'); // always second item for easy access with Down-Arrow, Enter
         ruleNames.push('( Input Expressions... )'); // can access by typing "in", Enter. Input expressions alerady needs typing, so shouldn't be annoyed of typing "in".
+        if (shouldShowUseSelectedText) {
+          ruleNames.push('( Use Selected Text )');
+        }
       }
     } else if (!isAdditionalOptionsForPattern) {
       ruleNames.push('( Input Expressions... )');
       ruleNames.push('( Additional Options for Pattern... )');
+      if (shouldShowUseSelectedText) {
+        ruleNames.push('( Use Selected Text )');
+      }
     }
     ruleNames = ruleNames.concat(Object.keys(rules));
 
@@ -145,21 +165,38 @@ export class SelectMatchesByPatternCommand extends SelectMatchesCommandBase {
     });
   }
 
-  protected onRuleChosen(module : SelectMatchesOrAdjustSelectionModule, selectMatchesCommand : SelectMatchesCommandBase, ruleName : string | undefined, lastRuleName : string, isAdditionalOptionsForPattern : boolean) {
+  protected onRuleChosen(module : SelectMatchesOrAdjustSelectionModule, shouldShowUseSelectedText : boolean, selectMatchesCommand : SelectMatchesCommandBase, ruleName : string | undefined, lastRuleName : string, isAdditionalOptionsForPattern : boolean) {
     if (ruleName === undefined) {
       return;
     }
     if (ruleName.startsWith('( Last Pattern: ')) {
       ruleName = lastRuleName;
-    } else if (ruleName === '( Input Expressions... )') {
-      this.setLastSelectRuleName(''); // also clear last rule, so that '( Input Expressions... )' is the first item for faster re-run.
-      if (module.getLastSelectCommand() === this) {
-        module.setLastSelectCommand(null);  // clear because last rule name is cleared. However, now the last command is copied at setLastCommand() if "repeatCommandUseCache" is true, and so this never occur in such case.
-      }
-      selectMatchesCommand.performCommand();
-      return;
     } else {
-      this.setLastSelectRuleName(ruleName);
+      let isUseSelectedText = shouldShowUseSelectedText && ruleName === '( Use Selected Text )';
+      if (isUseSelectedText || ruleName === '( Input Expressions... )') {
+        this.setLastSelectRuleName(''); // also clear last rule, so that '( Input Expressions... )' is the first item for faster re-run.
+        if (module.getLastSelectCommand() === this) {
+          module.setLastSelectCommand(null);  // clear because last rule name is cleared. However, now the last command is copied at setLastCommand() if "repeatCommandUseCache" is true, and so this never occur in such case.
+        }
+        if (isUseSelectedText) {
+          let editor = window.activeTextEditor;
+          let searchTarget = '';
+          if (editor) {
+            searchTarget = editor.document.getText(editor.selection);
+            searchTarget = searchTarget.match(/\r|\n/) ?
+              helper.escapeLiteralAsRegexString(searchTarget).replace(/\n/g, "\\n").replace(/\r/g, "\\r") :
+              '*' + searchTarget;
+          }
+          selectMatchesCommand.setLastSelectSearchTarget(searchTarget);
+          module.setLastSelectCommand(selectMatchesCommand);
+          selectMatchesCommand.performCommandWithArgs({ find: searchTarget });
+        } else {
+          selectMatchesCommand.performCommand();
+        }
+        return;
+      } else {
+        this.setLastSelectRuleName(ruleName);
+      }
     }
     this.setLastPatternSelectMethod(selectMatchesCommand); // set last method, because if invoked by `args: { "selectScope": "x" }` it prompts for the pattern, but I prefer the selectScope is not remembered yet until the rule is chosen here.
     if (isAdditionalOptionsForPattern) {

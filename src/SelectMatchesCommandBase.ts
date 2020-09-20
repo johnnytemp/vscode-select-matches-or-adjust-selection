@@ -46,7 +46,7 @@ export class SelectMatchesCommandBase extends SearchOrReplaceCommandBase {
     return this._lastTarget === null ? SelectMatchesCommandBase.lastTarget : this._lastTarget;
   }
 
-  protected setLastSelectSearchTarget(target: string) {
+  public setLastSelectSearchTarget(target: string) {
     if (this._lastTarget !== null) {
       this._lastTarget = target;
     } else {
